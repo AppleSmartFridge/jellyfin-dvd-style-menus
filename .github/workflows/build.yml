@@ -177,10 +177,26 @@ jobs:
         with:
           name: plugin
           path: release/*
-      - name: Release
+      - name: Pick release notes
+        id: notes
         if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          # Uses docs/release-notes/<tag>.md when it exists; otherwise GitHub generates notes.
+          f="docs/release-notes/${GITHUB_REF_NAME}.md"
+          if [ -f "$f" ]; then echo "path=$f" >> "$GITHUB_OUTPUT"; echo "generate=false" >> "$GITHUB_OUTPUT"
+          else echo "path=" >> "$GITHUB_OUTPUT"; echo "generate=true" >> "$GITHUB_OUTPUT"; fi
+      - name: Release
+        # Only publish when every runtime bundle built, so a release is never missing platforms.
+        if: >-
+          startsWith(github.ref, 'refs/tags/v') &&
+          needs.runtime-linux.result == 'success' &&
+          needs.runtime-macos.result == 'success' &&
+          needs.runtime-windows.result == 'success'
         uses: softprops/action-gh-release@v2
         with:
+          name: Disc Menus ${{ github.ref_name }}
+          body_path: ${{ steps.notes.outputs.path }}
+          generate_release_notes: ${{ steps.notes.outputs.generate == 'true' }}
           files: |
             release/*
             dist/bdmenu-runtime-*.zip
