@@ -79,6 +79,10 @@ tar -xjf "$WORK/libbluray.tar.bz2" -C "$WORK/libbluray" --strip-components=1
     --disable-examples --without-libxml2 \
     --enable-bdjava-jar --with-java9 \
     JDK_HOME="${JAVA_HOME:?set JAVA_HOME to a JDK 8-17}"
+  # libbluray 1.3.x compiles its BD-J classes for Java 6, which JDK 12+ can no longer target.
+  # Java 8 bytecode runs on the bundled Java 17 runtime, so raise the target.
+  sed -i.bak -E 's/(java_version_(asm|bdj)=)1\.[0-7]([^0-9]|$)/\11.8\3/g; s/^(JAVA_VERSION[A-Z_]* *= *)1\.[0-7]([^0-9]|$)/\11.8\2/' Makefile
+  grep -nE 'java_version_(asm|bdj)|^JAVA_VERSION' Makefile || true
   make -j"$JOBS"
   make install
 )
