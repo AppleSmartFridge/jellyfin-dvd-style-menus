@@ -71,7 +71,8 @@ def main():
         for f in files:
             z.write(os.path.join(a.plugin_dir, f), f)
         z.writestr("meta.json", json.dumps(meta, indent=2))
-        for bundle in sorted(os.listdir(a.dist)):
+        bundles = sorted(os.listdir(a.dist)) if os.path.isdir(a.dist) else []
+        for bundle in bundles:
             if not (bundle.startswith("bdmenu-runtime-") and bundle.endswith(".zip")):
                 continue
             rid = bundle[len("bdmenu-runtime-"):-len(".zip")]

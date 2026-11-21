@@ -22,7 +22,11 @@ annotate() { # title file lines
   echo "::error title=$1::$msg"
 }
 
-annotate "$title (output)" "$log" 80
+# Compiler and configure errors first: GitHub cuts long annotations short.
+errors="$(mktemp)"
+grep -nE 'error:|error [A-Z]+[0-9]+|ERROR|undefined reference|ld: |fatal:|No such file|not found' "$log" | grep -v 'warning:' | head -n 30 > "$errors" || true
+[ -s "$errors" ] && annotate "$title (errors)" "$errors" 30
+annotate "$title (output)" "$log" 25
 annotate "$title (ffmpeg config.log)" "${WORK:-$PWD/build/work}/ffmpeg/ffbuild/config.log" 40
 annotate "$title (libbluray config.log)" "${WORK:-$PWD/build/work}/libbluray/config.log" 40
 exit "$status"
