@@ -1158,7 +1158,7 @@ static void do_key(const char *k)
     static const struct { const char *name; uint32_t vk; } map[] = {
         { "up", BD_VK_UP }, { "down", BD_VK_DOWN }, { "left", BD_VK_LEFT }, { "right", BD_VK_RIGHT },
         { "enter", BD_VK_ENTER }, { "popup", BD_VK_POPUP },
-        { "red", BD_VK_RED }, { "green", BD_VK_GREEN }, { "yellow", BD_VK_YELLOW }, { "blue", BD_VK_BLUE },
+        { "red", BD_VK_RED }, { "green", BD_VK_GREEN }, { "yellow", BD_VL_YELLOW /* sic: libbluray's spelling */ }, { "blue", BD_VK_BLUE },
         { "0", BD_VK_0 }, { "1", BD_VK_1 }, { "2", BD_VK_2 }, { "3", BD_VK_3 }, { "4", BD_VK_4 },
         { "5", BD_VK_5 }, { "6", BD_VK_6 }, { "7", BD_VK_7 }, { "8", BD_VK_8 }, { "9", BD_VK_9 },
     };
