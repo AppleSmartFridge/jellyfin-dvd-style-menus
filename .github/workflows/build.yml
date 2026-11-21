@@ -55,7 +55,11 @@ jobs:
         run: PREFIX=$PWD/build/prefix ./native/scripts/ci-run.sh build ./native/scripts/build-deps.sh
       - name: Smoke test
         shell: bash
-        run: ./build/prefix/bin/bdmenu 2>&1 | grep -q usage
+        run: |
+          # With no arguments bdmenu prints its usage and exits 2; that proves it loads and runs.
+          out="$(./build/prefix/bin/bdmenu 2>&1 || true)"
+          echo "$out"
+          if ! grep -q usage <<<"$out"; then echo "::error title=smoke test::$out"; exit 1; fi
       - name: Bundle
         shell: bash
         run: PREFIX=$PWD/build/prefix RID=${{ matrix.rid }} OUT=$PWD/dist ./native/scripts/ci-run.sh bundle ./native/scripts/bundle.sh
