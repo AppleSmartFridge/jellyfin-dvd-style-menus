@@ -62,7 +62,7 @@ tar -xJf "$WORK/ffmpeg.tar.xz" -C "$WORK/ffmpeg" --strip-components=1
     --enable-muxer=mpegts \
     --enable-protocol=pipe,file \
     --enable-pthreads \
-    "${hw_flags[@]}"
+    ${hw_flags[@]+"${hw_flags[@]}"}
   make -j"$JOBS"
   make install
 )
@@ -77,7 +77,7 @@ tar -xjf "$WORK/libbluray.tar.bz2" -C "$WORK/libbluray" --strip-components=1
     --prefix="$PREFIX" \
     --enable-shared --disable-static \
     --disable-examples --without-libxml2 \
-    --enable-bdjava-jar \
+    --enable-bdjava-jar --with-java9 \
     JDK_HOME="${JAVA_HOME:?set JAVA_HOME to a JDK 8-17}"
   make -j"$JOBS"
   make install

@@ -22,13 +22,19 @@ Each disc also gets plain versions: **"Main Feature"** and one per extra or epis
 
 ## Install
 
-1. In Jellyfin: **Dashboard → Plugins → Repositories → +**, and add the `manifest.json` URL from this project's latest release. Then install **Disc Menus** from the catalogue. Alternatively, unzip `discmenus_<version>.zip` into `<config>/plugins/DiscMenus_<version>/`.
+1. In Jellyfin: **Dashboard → Plugins → Repositories → +**, and add this repository URL:
+
+   ```
+   https://github.com/AppleSmartFridge/jellyfin-dvd-style-menus/releases/latest/download/manifest.json
+   ```
+
+   Then install **Disc Menus** from the catalogue. Alternatively, download `discmenus_<version>.zip` from the [releases page](https://github.com/AppleSmartFridge/jellyfin-dvd-style-menus/releases) and unzip it into `<config>/plugins/DiscMenus_<version>/`.
 2. Restart Jellyfin.
 3. Optional, for the web player button: install the community **File Transformation** plugin. Disc Menus registers its script with it automatically. Without it, everything else still works, including the Disc Remote menu page and the phone remote. You can also load `/DiscMenus/web-inject.js` with any script-injector plugin.
 
 ### The native runtime
 
-The plugin needs nothing installed on the server. The first time a disc menu plays, it downloads the runtime bundle for your platform from this project's release and checks it against a SHA-256 built into the plugin. A download that doesn't match is rejected. Platforms: `linux-x64`, `linux-arm64`, `linux-musl-x64`, `win-x64`, `osx-arm64`, `osx-x64`.
+The plugin needs nothing installed on the server. The first time a disc menu plays, it downloads the runtime bundle for your platform from this project's release and checks it against a SHA-256 built into the plugin. A download that doesn't match is rejected. Platforms: `linux-x64`, `linux-arm64`, `linux-musl-x64`, `win-x64`, `osx-arm64`. Intel Macs (`osx-x64`) have no bundle yet, because GitHub has retired its Intel macOS runners.
 
 For servers without internet access, use `discmenus_<version>_offline.zip`. It includes every platform's runtime under `runtime/<rid>/`. You can also point **Settings → Runtime** at a folder holding an unpacked runtime.
 

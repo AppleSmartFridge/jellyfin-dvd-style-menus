@@ -49,16 +49,16 @@ jobs:
         run: |
           apk add --no-cache bash build-base cmake pkgconf nasm curl git patchelf zip xz bzip2 linux-headers \
             x264-dev freetype-dev fontconfig-dev apache-ant openjdk17-jdk
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Build FFmpeg, libbluray and bdmenu
         shell: bash
-        run: PREFIX=$PWD/build/prefix ./native/scripts/build-deps.sh
+        run: PREFIX=$PWD/build/prefix ./native/scripts/ci-run.sh build ./native/scripts/build-deps.sh
       - name: Smoke test
         shell: bash
         run: ./build/prefix/bin/bdmenu 2>&1 | grep -q usage
       - name: Bundle
         shell: bash
-        run: PREFIX=$PWD/build/prefix RID=${{ matrix.rid }} OUT=$PWD/dist ./native/scripts/bundle.sh
+        run: PREFIX=$PWD/build/prefix RID=${{ matrix.rid }} OUT=$PWD/dist ./native/scripts/ci-run.sh bundle ./native/scripts/bundle.sh
       - uses: actions/upload-artifact@v4
         with:
           name: runtime-${{ matrix.rid }}
@@ -71,21 +71,19 @@ jobs:
         include:
           - rid: osx-arm64
             runner: macos-14
-          - rid: osx-x64
-            runner: macos-13
     runs-on: ${{ matrix.runner }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
       - name: Install build tools
         run: brew install cmake pkg-config nasm x264 freetype fontconfig ant dylibbundler
       - name: Build FFmpeg, libbluray and bdmenu
-        run: PREFIX=$PWD/build/prefix ./native/scripts/build-deps.sh
+        run: PREFIX=$PWD/build/prefix ./native/scripts/ci-run.sh build ./native/scripts/build-deps.sh
       - name: Bundle
-        run: PREFIX=$PWD/build/prefix RID=${{ matrix.rid }} OUT=$PWD/dist ./native/scripts/bundle.sh
+        run: PREFIX=$PWD/build/prefix RID=${{ matrix.rid }} OUT=$PWD/dist ./native/scripts/ci-run.sh bundle ./native/scripts/bundle.sh
       - uses: actions/upload-artifact@v4
         with:
           name: runtime-${{ matrix.rid }}
@@ -97,8 +95,8 @@ jobs:
       run:
         shell: msys2 {0}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
@@ -119,11 +117,11 @@ jobs:
         run: |
           export JAVA_HOME="$(cygpath -u "$JAVA_HOME")"
           export PATH="/opt/apache-ant-1.10.15/bin:$PATH"
-          PREFIX=$PWD/build/prefix ./native/scripts/build-deps.sh
+          PREFIX=$PWD/build/prefix ./native/scripts/ci-run.sh build ./native/scripts/build-deps.sh
       - name: Bundle
         run: |
           export JAVA_HOME="$(cygpath -u "$JAVA_HOME")"
-          PREFIX=$PWD/build/prefix RID=win-x64 OUT=$PWD/dist ./native/scripts/bundle.sh
+          PREFIX=$PWD/build/prefix RID=win-x64 OUT=$PWD/dist ./native/scripts/ci-run.sh bundle ./native/scripts/bundle.sh
       - uses: actions/upload-artifact@v4
         with:
           name: runtime-win-x64
@@ -135,7 +133,7 @@ jobs:
     if: ${{ !cancelled() }}
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
