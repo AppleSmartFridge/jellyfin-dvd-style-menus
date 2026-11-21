@@ -1,0 +1,217 @@
+<div id="DiscMenusConfigPage" data-role="page" class="page type-interior pluginConfigurationPage" data-require="emby-input,emby-button,emby-select,emby-checkbox" data-title="Disc Menus">
+    <div data-role="content">
+        <div class="content-primary">
+            <h2 class="sectionTitle">Disc Menus</h2>
+            <p class="fieldDescription">Plays decrypted Blu-ray ISOs and BDMV folders with their HDMV and BD-J menus. The menus run on this server and reach clients as ordinary video, so every client can show them. Navigate with the Disc Remote: the remote button in the web player, the Disc Remote page in the menu, or your phone.</p>
+
+            <div class="verticalSection">
+                <h3 class="sectionTitle">Status</h3>
+                <div id="dmStatus" class="fieldDescription">Loading…</div>
+                <button is="emby-button" type="button" id="dmInstall" class="raised button-submit block" style="display:none"><span>Download runtime now</span></button>
+                <div id="dmSessions"></div>
+            </div>
+
+            <div class="verticalSection">
+                <h3 class="sectionTitle">Phone remote</h3>
+                <p class="fieldDescription">Scan this with your phone, or open the link under it. The link works once and expires after 10 minutes.</p>
+                <div id="dmQr" style="display:flex;flex-direction:column;align-items:flex-start;gap:8px">
+                    <img id="dmQrImg" alt="QR code for the phone remote" width="200" height="200" style="background:#fff;border-radius:8px;padding:8px;display:none">
+                    <a id="dmQrLink" href="#" target="_blank" rel="noopener" style="word-break:break-all;display:none"></a>
+                    <button is="emby-button" type="button" id="dmQrNew" class="raised"><span>Show QR code</span></button>
+                </div>
+            </div>
+
+            <form id="DiscMenusConfigForm">
+                <h3 class="sectionTitle">Versions</h3>
+                <div class="checkboxContainer checkboxContainer-withDescription">
+                    <label><input is="emby-checkbox" type="checkbox" id="EnableMenus"><span>Offer “Disc Menu (Interactive)”</span></label>
+                </div>
+                <div class="checkboxContainer checkboxContainer-withDescription">
+                    <label><input is="emby-checkbox" type="checkbox" id="EnableTitleVersions"><span>Offer the main feature and extras as separate versions</span></label>
+                    <div class="fieldDescription checkboxFieldDescription">These play on every client with no menu and allow seeking.</div>
+                </div>
+                <div class="inputContainer">
+                    <input is="emby-input" type="number" id="MinTitleSeconds" min="0" max="7200" label="Shortest extra to list (seconds)">
+                </div>
+                <div class="inputContainer">
+                    <input is="emby-input" type="number" id="MaxTitleVersions" min="1" max="99" label="Most titles to list per disc">
+                </div>
+
+                <h3 class="sectionTitle">Menu playback</h3>
+                <div class="inputContainer">
+                    <input is="emby-input" type="number" id="AutoEnterSeconds" min="0" max="600" label="Press Enter automatically after this many seconds in the first menu (0 = never)">
+                    <div class="fieldDescription">Useful on clients with no remote at hand. Most discs highlight “Play” first.</div>
+                </div>
+                <div class="inputContainer">
+                    <input is="emby-input" type="number" id="MenuVideoBitrateKbps" min="1000" max="60000" label="Menu stream video bitrate (kbit/s)">
+                </div>
+                <div class="selectContainer">
+                    <select is="emby-select" id="PreferredEncoder" label="H.264 encoder">
+                        <option value="auto">Automatic</option>
+                        <option value="libx264">libx264 (CPU)</option>
+                        <option value="h264_nvenc">NVIDIA NVENC</option>
+                        <option value="h264_mf">Windows Media Foundation</option>
+                        <option value="h264_videotoolbox">Apple VideoToolbox</option>
+                    </select>
+                </div>
+                <div class="selectContainer">
+                    <select is="emby-select" id="EncoderPreset" label="Encoder speed">
+                        <option value="ultrafast">Fastest</option>
+                        <option value="superfast">Very fast</option>
+                        <option value="veryfast">Fast (default)</option>
+                        <option value="faster">Balanced</option>
+                        <option value="fast">Better quality</option>
+                    </select>
+                </div>
+                <div class="selectContainer">
+                    <select is="emby-select" id="RegionCode" label="Player region">
+                        <option value="A">A (Americas, East Asia)</option>
+                        <option value="B">B (Europe, Africa, Oceania)</option>
+                        <option value="C">C (Rest of Asia)</option>
+                    </select>
+                </div>
+                <div class="inputContainer">
+                    <input is="emby-input" type="text" id="PreferredLanguage" maxlength="3" label="Preferred language (3-letter code, e.g. eng, deu, fra)">
+                </div>
+                <div class="inputContainer">
+                    <input is="emby-input" type="number" id="MaxConcurrentSessions" min="1" max="16" label="Most menu sessions at once">
+                </div>
+                <div class="inputContainer">
+                    <input is="emby-input" type="number" id="IdleTimeoutMinutes" min="1" max="240" label="Stop an unwatched menu session after (minutes)">
+                </div>
+
+                <h3 class="sectionTitle">Web client</h3>
+                <div class="checkboxContainer checkboxContainer-withDescription">
+                    <label><input is="emby-checkbox" type="checkbox" id="EnableWebIntegration"><span>Add a Disc Remote button to the web player</span></label>
+                    <div class="fieldDescription checkboxFieldDescription">Opens an on-screen remote. Needs the File Transformation plugin (or any script injector) so the script loads in jellyfin-web.</div>
+                </div>
+                <div class="checkboxContainer checkboxContainer-withDescription">
+                    <label><input is="emby-checkbox" type="checkbox" id="EnableWebKeyCapture"><span>Send keyboard keys to disc menus</span></label>
+                    <div class="fieldDescription checkboxFieldDescription">Arrow keys, Enter, digits, F1–F4 (colours), PageUp/PageDown (chapters), Home (top menu) and End (pop-up), only while a disc menu is playing.</div>
+                </div>
+
+                <h3 class="sectionTitle">Runtime</h3>
+                <div class="checkboxContainer">
+                    <label><input is="emby-checkbox" type="checkbox" id="AutoDownloadRuntime"><span>Download the runtime automatically when first needed</span></label>
+                </div>
+                <div class="inputContainer">
+                    <input is="emby-input" type="text" id="RuntimePathOverride" label="Use an unpacked runtime from this folder (optional)">
+                </div>
+                <div class="inputContainer">
+                    <input is="emby-input" type="text" id="RuntimeBaseUrlOverride" label="Download runtime bundles from this address (optional)">
+                </div>
+
+                <div>
+                    <button is="emby-button" type="submit" class="raised button-submit block"><span>Save</span></button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        (function () {
+            'use strict';
+            var pluginId = 'ad6c53d6-78ce-4d7f-bda4-595ac69bf03d';
+            var page = document.getElementById('DiscMenusConfigPage');
+            var checks = ['EnableMenus', 'EnableTitleVersions', 'EnableWebIntegration', 'EnableWebKeyCapture', 'AutoDownloadRuntime'];
+            var values = ['MinTitleSeconds', 'MaxTitleVersions', 'AutoEnterSeconds', 'MenuVideoBitrateKbps', 'PreferredEncoder', 'EncoderPreset', 'RegionCode', 'PreferredLanguage', 'MaxConcurrentSessions', 'IdleTimeoutMinutes', 'RuntimePathOverride', 'RuntimeBaseUrlOverride'];
+            var numeric = ['MinTitleSeconds', 'MaxTitleVersions', 'AutoEnterSeconds', 'MenuVideoBitrateKbps', 'MaxConcurrentSessions', 'IdleTimeoutMinutes'];
+
+            function $(id) { return page.querySelector('#' + id); }
+
+            function text(tag, value) { var e = document.createElement(tag); e.textContent = value; return e; }
+
+            function req(method, path) {
+                return ApiClient.fetch({ type: method, url: ApiClient.getUrl(path), headers: {} }, true).then(function (r) {
+                    if (r && typeof r.status === 'number') {
+                        if (!r.ok) { throw r; }
+                        var ct = (r.headers.get('content-type') || '');
+                        return ct.indexOf('json') >= 0 ? r.json() : null;
+                    }
+                    return r;
+                });
+            }
+
+            function loadStatus() {
+                req('GET', 'DiscMenus/Status').then(function (s) {
+                    var box = $('dmStatus');
+                    box.textContent = '';
+                    box.appendChild(text('div', 'Platform: ' + s.Rid + ' · runtime ' + s.RuntimeVersion));
+                    box.appendChild(text('div', s.RuntimeInstalled
+                        ? 'Runtime installed (' + s.RuntimeSource + '). BD-J: ' + (s.BdjAvailable ? 'available' : 'Java runtime missing, BD-J discs will not work')
+                        : 'Runtime not installed yet. It downloads the first time a disc menu plays, or use the button below.'));
+                    if (s.LastError) { box.appendChild(text('div', 'Last error: ' + s.LastError)); }
+                    $('dmInstall').style.display = s.RuntimeInstalled ? 'none' : '';
+
+                    var list = $('dmSessions');
+                    list.textContent = '';
+                    if (s.Sessions && s.Sessions.length) {
+                        list.appendChild(text('h4', 'Running menu sessions'));
+                        s.Sessions.forEach(function (x) {
+                            var row = document.createElement('div');
+                            row.className = 'listItem';
+                            row.appendChild(text('div', x.ItemName + ' — ' + x.MenuKind + ' · ' + x.Viewers + ' viewer(s)'));
+                            var stop = document.createElement('button');
+                            stop.setAttribute('is', 'emby-button');
+                            stop.className = 'raised';
+                            stop.textContent = 'Stop';
+                            stop.addEventListener('click', function () { req('DELETE', 'DiscMenus/Sessions/' + x.Id).then(loadStatus); });
+                            row.appendChild(stop);
+                            list.appendChild(row);
+                        });
+                    }
+                }).catch(function () { $('dmStatus').textContent = 'Could not read status.'; });
+            }
+
+            function showQr() {
+                req('POST', 'DiscMenus/Pairing').then(function (p) {
+                    var img = $('dmQrImg');
+                    var link = $('dmQrLink');
+                    img.src = p.QrUrl;
+                    img.style.display = '';
+                    link.href = p.RemoteUrl;
+                    link.textContent = p.RemoteUrl;
+                    link.style.display = '';
+                    $('dmQrNew').querySelector('span').textContent = 'New QR code';
+                });
+            }
+
+            page.addEventListener('viewshow', function () {
+                Dashboard.showLoadingMsg();
+                ApiClient.getPluginConfiguration(pluginId).then(function (config) {
+                    checks.forEach(function (k) { $(k).checked = !!config[k]; });
+                    values.forEach(function (k) { $(k).value = config[k] === undefined || config[k] === null ? '' : config[k]; });
+                    Dashboard.hideLoadingMsg();
+                });
+                loadStatus();
+            });
+
+            $('dmInstall').addEventListener('click', function () {
+                Dashboard.showLoadingMsg();
+                req('POST', 'DiscMenus/Runtime/Install').then(function () {
+                    Dashboard.hideLoadingMsg();
+                    loadStatus();
+                }, function () {
+                    Dashboard.hideLoadingMsg();
+                    loadStatus();
+                });
+            });
+
+            $('dmQrNew').addEventListener('click', showQr);
+
+            page.querySelector('#DiscMenusConfigForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+                Dashboard.showLoadingMsg();
+                ApiClient.getPluginConfiguration(pluginId).then(function (config) {
+                    checks.forEach(function (k) { config[k] = $(k).checked; });
+                    values.forEach(function (k) {
+                        var v = $(k).value;
+                        config[k] = numeric.indexOf(k) >= 0 ? (parseInt(v, 10) || 0) : v;
+                    });
+                    ApiClient.updatePluginConfiguration(pluginId, config).then(Dashboard.processPluginConfigurationUpdateResult);
+                });
+                return false;
+            });
+        })();
+    </script>
+</div>

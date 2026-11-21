@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#101114">
+    <meta name="robots" content="noindex">
+    <title>Disc Remote</title>
+    <link rel="stylesheet" href="Remote/remote.css">
+    <style>
+        html, body { margin: 0; background: #101114; min-height: 100%; }
+        body { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
+        .dm-gate { color: #eef0f4; font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; max-width: 420px; margin: 48px auto; padding: 0 16px; }
+        .dm-gate h1 { font-size: 1.3em; margin: 0 0 8px; }
+        .dm-gate p { color: #a3a9b6; }
+    </style>
+</head>
+<body>
+    <div id="app"></div>
+    <script src="Remote/remote.js"></script>
+    <script>
+    (function () {
+        'use strict';
+        var base = location.pathname.replace(/\/DiscMenus\/Remote.*$/i, '');
+        var storeKey = 'discmenus-remote-token';
+        var app = document.getElementById('app');
+
+        function getToken() { try { return localStorage.getItem(storeKey); } catch (e) { return null; } }
+        function setToken(t) { try { if (t) { localStorage.setItem(storeKey, t); } else { localStorage.removeItem(storeKey); } } catch (e) { /* private mode */ } window.__dmToken = t; }
+
+        function gate(title, text) {
+            app.innerHTML = '';
+            var d = document.createElement('div');
+            d.className = 'dm-gate';
+            var h = document.createElement('h1'); h.textContent = title;
+            var p = document.createElement('p'); p.textContent = text;
+            d.appendChild(h); d.appendChild(p);
+            app.appendChild(d);
+        }
+
+        function token() { return window.__dmToken || getToken(); }
+
+        var transport = {
+            request: function (method, path, body) {
+                var headers = { 'X-DiscMenus-Remote': token() || '' };
+                if (body) { headers['Content-Type'] = 'application/json'; }
+                return fetch(base + '/' + path, { method: method, headers: headers, body: body ? JSON.stringify(body) : undefined })
+                    .then(function (r) {
+                        if (r.status === 401) { setToken(null); }
+                        if (!r.ok) { var e = new Error('HTTP ' + r.status); e.status = r.status; throw e; }
+                        var ct = r.headers.get('content-type') || '';
+                        return ct.indexOf('json') >= 0 ? r.json() : null;
+                    });
+            },
+            eventsUrl: function (path) {
+                return base + '/' + path + '?rt=' + encodeURIComponent(token() || '');
+            }
+        };
+
+        function start() {
+            if (!token()) {
+                gate('Disc Remote', 'This phone is not paired yet. On your Jellyfin screen, open Disc Remote (in the menu, or from the remote button in the player), choose “Use your phone instead”, and scan the QR code or open the link shown under it.');
+                return;
+            }
+            app.innerHTML = '';
+            window.DiscRemote.mount(app, transport, {});
+        }
+
+        var params = new URLSearchParams(location.search);
+        var pair = params.get('pair');
+        if (pair) {
+            history.replaceState(null, '', location.pathname);
+            fetch(base + '/DiscMenus/Pairing/Claim', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code: pair }) })
+                .then(function (r) { return r.ok ? r.json() : Promise.reject(r); })
+                .then(function (res) { setToken(res.RemoteToken); start(); })
+                .catch(function () {
+                    if (token()) { start(); }
+                    else { gate('Pairing link expired', 'This link was already used or is more than 10 minutes old. Make a new one from Disc Remote on your Jellyfin screen.'); }
+                });
+        } else {
+            start();
+        }
+    })();
+    </script>
+</body>
+</html>

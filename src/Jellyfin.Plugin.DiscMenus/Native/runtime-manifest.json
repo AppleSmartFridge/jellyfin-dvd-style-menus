@@ -1,0 +1,12 @@
+{
+  "version": "1.0.0",
+  "baseUrl": "https://github.com/AppleSmartFridge/jellyfin-dvd-style-menus/releases/download/v1.0.0/",
+  "bundles": {
+    "linux-x64": { "file": "bdmenu-runtime-linux-x64.zip", "sha256": "" },
+    "linux-arm64": { "file": "bdmenu-runtime-linux-arm64.zip", "sha256": "" },
+    "linux-musl-x64": { "file": "bdmenu-runtime-linux-musl-x64.zip", "sha256": "" },
+    "win-x64": { "file": "bdmenu-runtime-win-x64.zip", "sha256": "" },
+    "osx-arm64": { "file": "bdmenu-runtime-osx-arm64.zip", "sha256": "" },
+    "osx-x64": { "file": "bdmenu-runtime-osx-x64.zip", "sha256": "" }
+  }
+}

@@ -1,0 +1,120 @@
+.dm-remote {
+    --dm-bg: #15171c;
+    --dm-surface: #22252d;
+    --dm-surface-2: #2c3039;
+    --dm-text: #eef0f4;
+    --dm-muted: #a3a9b6;
+    --dm-accent: #00a4dc;
+    --dm-focus: #7fd6ff;
+    box-sizing: border-box;
+    color: var(--dm-text);
+    font: 15px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 16px;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+.dm-remote *, .dm-remote *::before, .dm-remote *::after { box-sizing: inherit; }
+.dm-header { display: flex; align-items: center; justify-content: space-between; }
+.dm-title { font-size: 1.15em; font-weight: 600; letter-spacing: .01em; }
+.dm-status { color: var(--dm-muted); min-height: 1.4em; font-size: .92em; }
+.dm-picker, .dm-select {
+    width: 100%;
+    background: var(--dm-surface);
+    color: var(--dm-text);
+    border: 1px solid var(--dm-surface-2);
+    border-radius: 8px;
+    padding: 9px 10px;
+    font: inherit;
+}
+.dm-btn {
+    appearance: none;
+    border: 0;
+    border-radius: 12px;
+    background: var(--dm-surface);
+    color: var(--dm-text);
+    font: inherit;
+    font-weight: 600;
+    min-height: 48px;
+    min-width: 48px;
+    padding: 0 10px;
+    cursor: pointer;
+    touch-action: manipulation;
+    transition: background-color .12s ease, transform .06s ease;
+}
+.dm-btn:hover { background: var(--dm-surface-2); }
+.dm-btn:active { transform: scale(.96); }
+.dm-btn:focus-visible { outline: 2px solid var(--dm-focus); outline-offset: 2px; }
+.dm-dpad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    width: min(280px, 100%);
+    margin: 4px auto;
+    aspect-ratio: 1;
+}
+.dm-dpad .dm-btn { height: 100%; font-size: 1.3em; }
+.dm-dpad .dm-ok { background: var(--dm-accent); color: #fff; border-radius: 50%; font-size: 1.1em; }
+.dm-dpad .dm-ok:hover { filter: brightness(1.1); background: var(--dm-accent); }
+.dm-row { display: flex; gap: 8px; }
+.dm-row > * { flex: 1; }
+.dm-colors .dm-btn { min-height: 30px; border-radius: 8px; }
+.dm-red { background: #c62828; } .dm-red:hover { background: #d84343; }
+.dm-green { background: #2e7d32; } .dm-green:hover { background: #3d9a42; }
+.dm-yellow { background: #f9a825; } .dm-yellow:hover { background: #fbbd4b; }
+.dm-blue { background: #1565c0; } .dm-blue:hover { background: #2f7fd8; }
+.dm-digits { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 8px; }
+.dm-more { background: var(--dm-bg); border-radius: 10px; padding: 8px 12px; }
+.dm-more summary { cursor: pointer; color: var(--dm-muted); padding: 4px 0; }
+.dm-tracks label { display: flex; flex-direction: column; gap: 4px; font-size: .85em; color: var(--dm-muted); }
+.dm-touchpad {
+    margin-top: 8px;
+    aspect-ratio: 16 / 9;
+    border-radius: 10px;
+    border: 1px dashed var(--dm-surface-2);
+    background: var(--dm-surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 12px;
+    color: var(--dm-muted);
+    font-size: .85em;
+    cursor: crosshair;
+}
+.dm-qr { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 8px 0; text-align: center; }
+.dm-qr img { background: #fff; border-radius: 8px; padding: 8px; width: 200px; height: 200px; }
+.dm-link { color: var(--dm-focus); word-break: break-all; font-size: .9em; }
+.dm-hint { margin: 0; color: var(--dm-muted); font-size: .85em; }
+.dm-close { min-height: 36px; min-width: 36px; border-radius: 50%; }
+.dm-disabled .dm-dpad, .dm-disabled .dm-row, .dm-disabled .dm-touchpad { opacity: .45; }
+.dm-compact { padding: 12px; gap: 8px; font-size: 14px; }
+.dm-compact .dm-dpad { width: 200px; }
+.dm-compact .dm-btn { min-height: 40px; min-width: 40px; }
+
+/* Floating panel used from the video OSD */
+.dm-panel {
+    position: fixed;
+    right: 16px;
+    bottom: 120px;
+    z-index: 100000;
+    width: min(340px, calc(100vw - 32px));
+    max-height: calc(100vh - 160px);
+    overflow-y: auto;
+    background: rgba(21, 23, 28, .96);
+    border-radius: 16px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, .5);
+    backdrop-filter: blur(8px);
+}
+@media (max-width: 600px) {
+    .dm-panel { right: 8px; left: 8px; bottom: 90px; width: auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .dm-btn { transition: none; }
+    .dm-btn:active { transform: none; }
+}

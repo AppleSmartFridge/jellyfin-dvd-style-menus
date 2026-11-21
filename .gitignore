@@ -1,0 +1,10 @@
+bin/
+obj/
+out/
+build/
+dist/
+release/
+*.user
+.vs/
+.idea/
+.claude/settings.local.json
