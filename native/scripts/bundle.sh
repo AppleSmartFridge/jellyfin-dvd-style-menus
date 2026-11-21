@@ -43,7 +43,13 @@ case "$RID" in
         fi
       done
     }
+    # The staged binary's rpath points at the (still empty) bundle lib folder, so let ldd find the
+    # freshly built libraries in $PREFIX/lib.
+    export LD_LIBRARY_PATH="$PREFIX/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
     copy_deps "$STAGE/bin/bdmenu"
+    for lib in libbluray libavcodec libavformat libavutil libswscale libswresample; do
+      ls "$STAGE"/lib/"$lib".so* >/dev/null 2>&1 || { echo "bundle: $lib was not copied" >&2; exit 1; }
+    done
     for f in "$STAGE"/lib/*.so*; do patchelf --set-rpath '$ORIGIN' "$f"; done
     patchelf --set-rpath '$ORIGIN/../lib' "$STAGE/bin/bdmenu"
     ;;
