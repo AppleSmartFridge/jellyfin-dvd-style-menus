@@ -38,6 +38,10 @@ if [ "$platform" != macos ] && [ "$(uname -m)" = x86_64 ]; then
   make -C "$WORK/nv-codec-headers" PREFIX="$PREFIX" install
   hw_flags+=(--enable-ffnvcodec --enable-nvenc --enable-encoder=h264_nvenc)
 fi
+# FFmpeg uses native Windows threads on Windows and pthreads elsewhere.
+threads_flag=--enable-pthreads
+[ "$platform" = windows ] && threads_flag=--enable-w32threads
+
 case "$platform" in
   macos) hw_flags+=(--enable-videotoolbox --enable-encoder=h264_videotoolbox) ;;
   windows) hw_flags+=(--enable-mediafoundation --enable-encoder=h264_mf) ;;
@@ -61,7 +65,7 @@ tar -xJf "$WORK/ffmpeg.tar.xz" -C "$WORK/ffmpeg" --strip-components=1
     --enable-encoder=aac,libx264 \
     --enable-muxer=mpegts \
     --enable-protocol=pipe,file \
-    --enable-pthreads \
+    "$threads_flag" \
     ${hw_flags[@]+"${hw_flags[@]}"}
   make -j"$JOBS"
   make install
